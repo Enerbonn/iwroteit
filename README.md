@@ -1,9 +1,12 @@
 # Iwroteit:P
 
-A Codex skill for making digital handwritten-style PDFs with Typst. It combines
-actual alternate glyphs with variable letter shapes, baseline bounce, spacing,
-and slope. Keep editable Typst source; export image-only PDFs by default, or
-choose selectable text explicitly.
+Make a handwritten-style PDF from a Typst file. Choose how neat or loose the
+writing should look, add brush highlights, then export it. The font has real
+letter variants, and the template adds changes in spacing, size, slant and
+baseline so repeated words don't all look the same.
+
+Use it as a skill, or edit the file and run it yourself. The default PDF has no
+selectable text layer. You can turn selection on when you want it.
 
 ![I wrote this ;> - an extremely honest handwriting demo](assets/demo.png)
 
@@ -11,10 +14,9 @@ choose selectable text explicitly.
 
 ## How the variation works
 
-This is more than selecting a handwriting font. The bundled Shantell Sans font
-cycles real alternate glyphs, and a seeded Typst helper varies font axes between
-words while preserving contextual shaping inside each word. Settings are
-reproducible, so a rebuild does not randomly change the document.
+Shantell Sans cycles through alternate letterforms. Typst then varies the font
+settings between words while keeping the font's within-word shaping intact.
+The variation uses a seed, so rebuilding the same file gives the same result.
 
 The tested specimen uses four glyphs for repeated `a`, four for repeated `C`,
 and three for repeated `1` when cycling is enabled, compared with one each
@@ -32,11 +34,76 @@ Place this folder at `.agents/skills/iwroteit/` inside your workspace, or at
 
 The display name is **Iwroteit:P**; the technical skill name is `iwroteit`.
 
-## Run directly
+## Use it manually, without an AI agent
 
-Requirements: Typst CLI with custom variable-font axis support (tested with
-0.15.1), Python 3, and PyMuPDF for image-only export and PDF verification.
-The font is bundled and requires no system font installation.
+You can write the text yourself and export it from your terminal. No prompt,
+API key or AI subscription is needed. This workflow runs locally once the
+tools are installed.
+
+### 1. Set up the tools
+
+Install [Typst CLI](https://github.com/typst/typst#installation) and
+[Python 3](https://www.python.org/downloads/). This project was tested with
+Typst 0.15.1. The CLI needs support for custom variable-font axes.
+
+Download this repository as a ZIP and extract it, or use Git:
+
+```sh
+git clone https://github.com/Enerbonn/iwroteit.git
+cd iwroteit
+```
+
+Open a terminal in the extracted/cloned folder, then install the PDF dependency:
+
+```sh
+python -m pip install pymupdf
+typst --version
+```
+
+The handwriting font is already in `assets/fonts`. You don't have to install
+it system-wide. On Windows, use `py` instead of `python` if that's how your
+Python launcher is available.
+
+### 2. Write your document
+
+Create `my-notes.typ` in the repository's main folder using any text editor.
+Paste this example, then replace the text with your own:
+
+```typst
+#import "assets/handwriting.typ": *
+#show: handwritten.with(size: 12pt, ink: black, intensity: 75%)
+#set page(numbering: none)
+
+#text(size: 20pt)[#hw("My handwritten notes", seed: 11)]
+#note("This is my text. I can edit it directly in this file.", seed: 21)
+#work("P(A) = 3/6 = 1/2", seed: 31)
+#brush-answer("Answer: 1/2 = 50%", seed: 41)
+```
+
+Use `hw` for text, `note` for a paragraph, `work` for an indented line, and
+`brush-answer` for a highlighted answer. Give lines different seeds to vary
+their appearance. Keep each highlighted answer short enough for one line.
+
+### 3. Export it
+
+Run this from the same folder:
+
+```sh
+python scripts/compile.py my-notes.typ my-notes.pdf --root .
+```
+
+Open `my-notes.pdf`. It contains page images at 300 DPI, without a selectable
+text layer. To keep selectable text, add `--selectable`:
+
+```sh
+python scripts/compile.py my-notes.typ my-notes.pdf --root . --selectable
+```
+
+Edit `my-notes.typ` whenever you want to change something, then run the command
+again. The Python script bundles the font, invokes Typst, and handles the PDF
+export. It doesn't call an AI model.
+
+### Try the included files
 
 From the repository root:
 
@@ -45,29 +112,21 @@ python scripts/compile.py assets/specimen.typ specimen.pdf --root . --selectable
 python scripts/verify_variation.py specimen.pdf
 ```
 
-Import `assets/handwriting.typ` into a `.typ` document, using a path relative to
-that document. The Typst project root must contain the imported template.
-
-```typst
-#import "assets/handwriting.typ": *
-#show: handwritten.with(size: 12pt, paper: "plain")
-#hw("Notes written digitally", intensity: 65%, seed: 11)
-#topic(1, "Probability")
-#note("Three favorable outcomes out of six.", seed: 21)
-#work("P(A) = 3/6 = 1/2", seed: 31)
-#answer("Answer: 1/2 = 50%", seed: 41)
-```
+To export the funny demo instead, run
+`python scripts/compile.py assets/demo.typ demo.pdf --root .`.
+Keep the template inside the Typst project root. If you put your source in a
+subfolder, adjust its import path accordingly.
 
 ## One main naturalness setting
 
-Set **`intensity: 0%` to `100%`**. The default is `60%`. This is a Typst
-parameter, not a graphical slider. It coordinates letter-shape irregularity,
+Set **`intensity: 0%` to `100%`**. The default is `60%`.
+You change it in the Typst file; there isn't a slider interface. It adjusts letter-shape irregularity,
 baseline bounce/wander, word spacing, letter scale, slant, and stroke-weight
 variation. `0%` removes the helper's added irregularity; the font's real
 alternate-glyph cycling remains on.
 
-Set it **once for the whole document**, then override individual passages only
-if needed:
+Set it **once for the whole document**. If one passage needs a different
+setting, change that passage:
 
 ```typst
 #show: handwritten.with(intensity: 75%)
@@ -81,7 +140,8 @@ if needed:
 #hw("Looser, less perfect writing.", intensity: 95%)
 ```
 
-Optional overrides take precedence over the corresponding master defaults:
+You can still change individual properties. Those values take priority over
+the defaults chosen by intensity:
 
 ```typst
 #hw("Loose writing with steady size and heavy ink.",
@@ -90,8 +150,8 @@ Optional overrides take precedence over the corresponding master defaults:
 
 ## Make later writing progressively looser
 
-`fatigue` is a visual preset, not a claim about the writer's physical state.
-Set it per paragraph, or use `fatigue-to` to ramp across a text run. It adds
+Use `fatigue` when you want the later writing to look less careful. Set it
+per paragraph, or use `fatigue-to` to change it gradually across a text run. It adds
 irregularity, a little size reduction, more baseline movement, and variable
 stroke weight. The effect is opt-in and combines with the master setting.
 
@@ -115,8 +175,8 @@ stroke weight. The effect is opt-in and combines with the master setting.
 | `fatigue`, `fatigue-to` | Fixed or progressive looseness, from 0 to 1 |
 | `handline`: `angle`, `inset`, `gap` | Whole-line slope, left indent, and line spacing |
 
-Stroke controls interpolate font-outline weight. They do not reconstruct
-individual pen trajectories or pressure changes inside a single stroke. Long
+Stroke controls change the font's outline weight between words. They don't
+recreate individual pen movements or pressure changes inside a stroke. Long
 auto-wrapped paragraphs keep their word progression across wraps; use explicit
 `handline` calls when each physical line needs its own slope or baseline reset.
 
