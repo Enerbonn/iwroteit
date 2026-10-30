@@ -11,4 +11,4 @@
 #handwritten(size: 14pt, intensity: 100%)[#hw(sentence, seed: 17,
   scale-jitter: 0%, pressure: 0, baseline-wave: 0pt, variation: 0,
   bounce: 0, irregularity: 0, slant: 0, slant-jitter: 0,
-  word-space: 100%, space-jitter: 0%)]
+  word-space: 100%, space-jitter: 0%, letter-variance: 0%, stroke-variance: 0%)]

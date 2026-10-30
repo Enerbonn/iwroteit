@@ -1,12 +1,16 @@
 // Digital handwriting: actual OpenType alternates plus reproducible variation.
 #let pen = rgb("#193d76")
 #let handwriting-settings = state("iwroteit-intensity", 60%)
+#let letter-settings = state("iwroteit-letter-variance", none)
+#let stroke-settings = state("iwroteit-stroke-variance", none)
 #let random-unit(n) = {
   let a = calc.rem((n + 97) * 127773, 2147483647)
+  a = calc.rem(a * a + 104729, 2147483647)
   calc.rem(a * 48271, 2147483647) / 2147483647
 }
 
-#let handwritten(body, size: 12pt, ink: pen, paper: "plain", intensity: 60%) = {
+#let handwritten(body, size: 12pt, ink: pen, paper: "plain", intensity: 60%,
+  letter-variance: none, stroke-variance: none) = {
   assert(type(intensity) == ratio and intensity >= 0% and intensity <= 100%,
     message: "intensity must be a percentage from 0% to 100%")
   set page(
@@ -28,12 +32,13 @@
   set par(justify: false, leading: 0.65em, spacing: 0.7em)
   show raw: set text(font: "Shantell Sans")
   handwriting-settings.update(intensity)
+  letter-settings.update(letter-variance)
+  stroke-settings.update(stroke-variance)
   body
 }
 
-// Keep a word together for the font's real glyph-cycling rules. Do not split
-// characters into independent boxes: doing that destroys contextual alternates.
-// Jitter is bounded and seeded; a repeated render yields the same geometry.
+// Individual mode explicitly selects generated aalt variants before applying
+// contour/geometry variation. Zero letter/stroke variance keeps native cycling.
 #let hw(
   s, seed: 1, intensity: none, irregularity: none, bounce: none, variation: none,
   word-space: none, space-jitter: none,
@@ -41,12 +46,22 @@
   baseline-drift: 0pt, baseline-wave: none,
   stroke-weight: none, pressure: none, slant: none, slant-jitter: none,
   fatigue: 0, fatigue-to: none,
+  letter-variance: none, stroke-variance: none, letter-variant: none,
 ) = context {
   if type(s) != str { return s }
   let intensity = if intensity == none { handwriting-settings.get() } else { intensity }
   assert(type(intensity) == ratio and intensity >= 0% and intensity <= 100%,
     message: "intensity must be a percentage from 0% to 100%")
   let strength = intensity / 100%
+  let letter-variance = if letter-variance == none { letter-settings.get() } else { letter-variance }
+  let stroke-variance = if stroke-variance == none { stroke-settings.get() } else { stroke-variance }
+  let letter-variance = if letter-variance == none { intensity } else { letter-variance }
+  let stroke-variance = if stroke-variance == none { intensity } else { stroke-variance }
+  assert(letter-variance >= 0% and letter-variance <= 100%, message: "letter-variance must be 0%..100%")
+  assert(stroke-variance >= 0% and stroke-variance <= 100%, message: "stroke-variance must be 0%..100%")
+  assert(letter-variant == none or (type(letter-variant) == int and letter-variant >= 1 and letter-variant <= 32),
+    message: "letter-variant must be none or an integer from 1 to 32")
+  let letter-strength = letter-variance / 100%
   // A main control chooses defaults. Explicit per-property settings win.
   let irregularity = if irregularity == none { 95 * strength } else { irregularity }
   let bounce = if bounce == none { 38 * strength } else { bounce }
@@ -90,7 +105,30 @@
       style.insert("weight", int(calc.round(calc.clamp(base-weight - f * 30
         + (r - 0.5) * (pressure + f * 45), 300, 800))))
     }
-    text(..style)[#word]
+    if letter-variance > 0% or stroke-variance > 0% or letter-variant != none {
+      for (j, character) in word.clusters().enumerate() {
+        let c = random-unit(k + j * 131 + 17)
+        let d = random-unit(k + j * 179 + 67)
+        let char-style = style
+        char-style.insert("size", style.size * (1 + (c - 0.5) * scale-jitter / 100% * letter-strength))
+        char-style.insert("baseline", style.baseline + (d - 0.5) * 1.8pt * letter-strength * variation)
+        if "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".contains(character) {
+          let variants = style.variations
+          variants.insert("INKR", stroke-variance / 100% * 100)
+          variants.insert("ital", calc.clamp(slant + (d - 0.5) * slant-jitter * (1 + letter-strength), 0, 1))
+          char-style.insert("font", "Iwroteit Ink")
+          char-style.insert("variations", variants)
+          let choice = if letter-variant != none { letter-variant }
+            else if random-unit(k + j * 211 + 101) < letter-strength {
+              1 + int(calc.floor(c * 32))
+            } else { 1 }
+          char-style.insert("features", ("rlig": 0, "calt": 0, "aalt": choice))
+        }
+        text(..char-style)[#character]
+      }
+    } else {
+      text(..style)[#word]
+    }
     if i < words.len() - 1 {
       let spacing = word-space + (r - 0.5) * (space-jitter + f * 35%) + f * 6%
       text(spacing: calc.max(40%, spacing))[ ]

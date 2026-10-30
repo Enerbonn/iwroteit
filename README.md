@@ -18,15 +18,23 @@ still recognize the page image with its own OCR.
 
 ## How the variation works
 
-Shantell Sans cycles through alternate letterforms. Typst then varies the font
-settings between words while keeping the font's within-word shaping intact.
-The variation uses a seed, so rebuilding the same file gives the same result.
+The original Shantell Sans alternates are subtle. The default renderer now uses
+**Iwroteit Ink**, a renamed, open-license derivative with 32 generated choices
+per ASCII letter and digit. It also changes the outlines with a smooth
+deformation axis, so the variation happens inside the letters too.
 
-The tested specimen uses four glyphs for repeated `a`, four for repeated `C`,
+These are generated versions of the font's shapes, not 32 separately written
+samples. The original Shantell Sans file and its license are kept intact.
+Variation uses a seed, so rebuilding the same source gives the same result.
+
+The native-font specimen uses four glyphs for repeated `a`, four for repeated `C`,
 and three for repeated `1` when cycling is enabled, compared with one each
 when cycling is disabled. Variable-axis interpolation adds many further
 rendered variations. This does **not** mean 50 independently drawn versions of
 every letter, and the font is not a copy of any user's personal handwriting.
+
+[See the enlarged letter comparison](assets/letter-variance.png), or open the
+[comparison PDF](assets/letter-variance.pdf).
 
 ## Use as a Codex skill
 
@@ -152,6 +160,35 @@ the defaults chosen by intensity:
   intensity: 85%, scale-jitter: 0%, stroke-weight: 460, pressure: 0)
 ```
 
+## Control individual letters and their curves
+
+Both controls follow `intensity` unless you set them yourself:
+
+```typst
+#show: handwritten.with(intensity: 75%,
+  letter-variance: 85%, stroke-variance: 70%)
+#hw("aaaa eeee coffee little", seed: 42)
+```
+
+`letter-variance` controls individual-letter variation in addition to the
+word-level settings. `stroke-variance` changes the letter contours: curves,
+loop shapes and control points receive smooth seeded deformations. Set it
+lower for restrained writing or higher for more irregular shapes.
+
+```typst
+// Same glyph choice, different amounts of contour deformation
+#hw("aaaa eeee", letter-variant: 9, stroke-variance: 20%)
+#hw("aaaa eeee", letter-variant: 9, stroke-variance: 90%)
+// Return to the original font's native word shaping
+#hw("Native alternates only", letter-variance: 0%, stroke-variance: 0%)
+```
+
+`letter-variant` accepts 1-32 on a text run; omit it for seeded per-letter
+choices. At zero stroke variance, the choices collapse to the original native
+forms, so several will look alike. The individual mode is for unjoined print
+letters, not connected cursive or complex-script shaping. It doesn't generate
+pen trajectories or independently redraw a letter from a handwriting sample.
+
 ## Make later writing progressively looser
 
 Use `fatigue` when you want the later writing to look less careful. Set it
@@ -172,6 +209,8 @@ stroke weight. The effect is opt-in and combines with the master setting.
 | `word-space`, `space-jitter` | Average gap and gap variation; e.g. `110%`, `30%` |
 | `scale`, `scale-jitter` | Letter size and size variation; e.g. `98%`, `8%` |
 | `tracking` | Extra letter spacing, e.g. `0.1pt` |
+| `letter-variance`, `stroke-variance` | Per-letter variation and smooth contour deformation, 0%-100%; both inherit intensity |
+| `letter-variant` | Exact generated choice, 1-32; omit for seeded choices |
 | `irregularity`, `bounce`, `variation` | Shape axis, glyph bounce, added variation strength |
 | `slant`, `slant-jitter` | Font italic axis and its variation, in 0-1 units |
 | `baseline-drift`, `baseline-wave` | End-to-end drift and smooth baseline wave |
@@ -179,8 +218,8 @@ stroke weight. The effect is opt-in and combines with the master setting.
 | `fatigue`, `fatigue-to` | Fixed or progressive looseness, from 0 to 1 |
 | `handline`: `angle`, `inset`, `gap` | Whole-line slope, left indent, and line spacing |
 
-Stroke controls change the font's outline weight between words. They don't
-recreate individual pen movements or pressure changes inside a stroke. Long
+Weight/pressure controls change outline weight; stroke variance warps contours.
+These don't recreate individual pen movements or pressure changes inside a stroke. Long
 auto-wrapped paragraphs keep their word progression across wraps; use explicit
 `handline` calls when each physical line needs its own slope or baseline reset.
 
@@ -248,6 +287,10 @@ rasterization alone cannot make a printed equation look handwritten.
 
 Skill, helper scripts, and Typst template: MIT. Bundled font: SIL OFL 1.1, with
 the full license preserved in `assets/fonts/OFL.txt`.
+
+The derived Iwroteit Ink font is also OFL 1.1. Modification details are in
+[DERIVATION.md](assets/fonts/DERIVATION.md). Development rebuilds require
+fonttools; ordinary use needs only the dependencies listed above.
 
 - [Shantell Sans font project](https://github.com/arrowtype/shantell-sans)
 - [Font design process](https://shantellsans.com/process)

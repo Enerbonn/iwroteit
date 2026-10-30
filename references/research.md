@@ -8,12 +8,26 @@ Researched 2026-10-30. Verified links are primary project/documentation sources.
 - Design process and alternate generation: https://shantellsans.com/process
 - Typst text feature/axis controls: https://typst.app/docs/reference/text/text/
 
-Shantell Sans cycles glyph alternates using `rlig`, not only `calt`. Its five
+Native Shantell Sans cycles glyph alternates using `rlig`, not only `calt`. Its five
 axes are wght 300-800, ital 0-1, INFM 0-100, BNCE -100 to 100, and SPAC 0-100.
 Alternates and variable-axis interpolation complement each other: the first
 changes selected glyph designs; the second provides continuous variation in
 shape, height, spacing, and slope. Word-scoped text runs preserve the font's
-within-word alternate rules. Do not wrap each letter separately.
+within-word alternate rules in native mode. Those native alternates can be
+visually subtle despite having different IDs and contours.
+
+The current default adds the renamed OFL derivative Iwroteit Ink. It provides
+32 generated choices per ASCII letter/digit and an INKR axis for coherent
+outline/control-point displacement. Individual mode explicitly selects aalt
+variants and disables native rlig/calt for those glyphs; it does not depend on
+native contextual cycling after splitting the run. Native mode remains
+available when both letter-variance and stroke-variance are zero.
+
+Development checks compare normalized point geometry, excluding translation:
+the 32 a, e and C variants are distinct at INKR=100, and all change contour
+shape from INKR=0. The enlarged comparison and actual document pages are also
+visually reviewed. This tests more than glyph IDs, while not claiming that
+font warping is equivalent to learned pen-stroke synthesis.
 
 The font file is bundled unmodified with its OFL license. Download source:
 https://raw.githubusercontent.com/arrowtype/shantell-sans/main/fonts/Shantell%20Sans/Desktop/ShantellSans%5BBNCE%2CINFM%2CSPAC%2Cital%2Cwght%5D.ttf

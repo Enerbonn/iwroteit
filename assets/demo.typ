@@ -33,10 +33,10 @@
   #link("https://github.com/Enerbonn/iwroteit")[#underline[#hw("Iwroteit:P", seed: 44, fatigue: 0.35)]].
   #hw("That would be too convenient.", seed: 45, fatigue: 0.4)]
 
-#handline("Getting lazy near the bottom na.", seed: 51,
+#handline("Getting lazy near the bottom now.", seed: 51,
   intensity: 75%, fatigue: 0.4, fatigue-to: 0.65, space-jitter: 24%,
   baseline-wave: 0.7pt, angle: -0.5deg, gap: 8pt)
-#handline("Pagod na yung kamay, okay?", seed: 53,
+#handline("My hand is tired, okay?", seed: 53,
   fatigue: 0.6, scale-jitter: 5%, word-space: 110%,
   baseline-drift: -1.6pt, inset: 6pt, gap: 9pt)
 #handline("Nothing to do with fatigue: 0.85. Hehehe.", seed: 57,
@@ -46,7 +46,7 @@
 #handline("Wait, you can change that with one setting?", seed: 61,
   fatigue: 0.9, scale: 97%, scale-jitter: 8%, word-space: 112%,
   baseline-wave: 1.7pt, pressure: 80, angle: 0.3deg, inset: 3pt, gap: 12pt)
-#handline("Anyway, ako nagsulat. You saw nothing ;>", seed: 67,
+#handline("Anyway, wrote it myself. You saw nothing ;>", seed: 67,
   intensity: 100%, fatigue: 1, scale: 103%, scale-jitter: 10%, pressure: 95,
   word-space: 111%, space-jitter: 35%, baseline-drift: -2pt,
   angle: -0.6deg, inset: 8pt, gap: 15pt)
@@ -57,5 +57,5 @@
   #link("https://github.com/arrowtype/shantell-sans")[Shantell Sans] +
   #link("https://typst.app/")[Typst] +
   #link("https://github.com/Enerbonn/iwroteit")[Iwroteit:P]. \
-  #hw("This is a generated handwriting demo. Yung promises, joke lang.", seed: 83)
+  #hw("This is a generated handwriting demo. The promises are a joke.", seed: 83)
 ]

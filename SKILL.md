@@ -24,14 +24,27 @@ and verifying a PDF. Preserve the requested content, identity, and filename.
 
 ## Real variation, rather than a handwriting font alone
 
-The font contains real alternate glyphs cycled by its `rlig` OpenType feature.
-Keep `rlig` and `calt` enabled. Its INFM axis varies shaping, BNCE varies the
-baseline, SPAC varies spacing, and ital varies slope. The bundled `hw` helper
-changes axis settings reproducibly between words, adds restrained baseline and
-tracking variation, and preserves contextual shaping within each word.
+Two modes are bundled. Native Shantell Sans uses `rlig`/`calt` and has subtle
+alternate shapes. The default `hw` mode uses the renamed OFL derivative
+Iwroteit Ink: 32 addressable generated glyph choices per ASCII letter/digit,
+with a new INKR axis that smoothly deforms outline/control points. This changes
+the contours, not only the positions of words. Composite glyphs vary component
+placement. The original font stays unmodified and its license is preserved.
 
-This offers many rendered variations, but does not mean every letter has 30 or
-50 independently drawn originals. Never invent an alternate count. It is a
+`letter-variance` and `stroke-variance` both range 0%-100% and inherit intensity
+by default. Set them document-wide on `handwritten` or override them on `hw`.
+The first controls per-letter choices/geometry; the second controls contour
+warping. Set both to 0% for native word shaping. `letter-variant: 1` through 32
+on `hw` fixes a choice for comparison. At zero stroke variance the generated
+glyphs reduce to the underlying native shapes, so many choices look alike.
+
+Individual mode explicitly chooses `aalt` alternatives and turns off native
+cycling for those characters; it is intended for this unjoined print font,
+not cursive joining or complex-script shaping. Other characters use the original
+font; joined scripts are outside individual mode's scope. Seeds are deterministic.
+
+The 32 choices are generated contour variants, not 32 independently drawn
+originals. Never describe them as authentic pen strokes or a personal font. It is a
 generic synthetic handwriting style, not a reproduction of the user's hand.
 
 Read [the research and implementation notes](references/research.md) when
@@ -76,8 +89,9 @@ Use short explicit lines when each line should reset its slope/wave. Long
 auto-wrapped paragraphs keep the progression across wraps.
 
 `stroke-weight` selects a font weight from 300 to 800; `pressure` varies it
-between words. These are font-outline variations, not pressure-sensitive
-tablet strokes or independent stroke-path editing. Keep equations readable.
+between words. `stroke-variance` additionally warps the curves. These are
+font-outline variations, not pressure-sensitive tablet strokes or independent
+pen-path editing. Keep equations readable and inspect small sizes for collisions.
 
 Use `hfrac` for stacked handwritten fractions and `hpower` for superscripts.
 Use `brush-answer` instead of `answer` for a yellow tablet-highlighter swipe
@@ -140,3 +154,9 @@ its PDF to `scripts/verify_controls.py`. It checks master settings, inherited
 and explicit values, individual overrides, and actual scale/baseline geometry.
 Use `assets/demo.typ` for the humorous public preview; retain its clickable
 font, layout-engine and skill credits when adapting the joke.
+
+`assets/letter-variance.typ` shows enlarged same-text comparisons at different
+stroke strengths and exact variant choices. Inspect it visually; distinct
+glyph IDs alone do not prove visibly different contours. Font build/outline
+validation uses fonttools only for development; ordinary use needs no new
+dependency because both fonts are bundled. See assets/fonts/DERIVATION.md.
