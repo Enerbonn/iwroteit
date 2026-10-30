@@ -67,6 +67,10 @@ between words. These are font-outline variations, not pressure-sensitive
 tablet strokes or independent stroke-path editing. Keep equations readable.
 
 Use `hfrac` for stacked handwritten fractions and `hpower` for superscripts.
+Use `brush-answer` instead of `answer` for a yellow tablet-highlighter swipe
+with seeded uneven edges, chisel-shaped ends, and overlapping translucent ink.
+`brush-highlight(content, seed: 1)` wraps other short content. Each swipe is
+unbroken; split long answers into separately highlighted lines to fit the page.
 For simple probability work, readable slash fractions also work. Keep fractions,
 set members, probabilities and operators unambiguous. Do not accept a mixed
 printed-math appearance by accident: ordinary math mode often selects a math
@@ -82,7 +86,13 @@ Natural variation should not reduce legibility or alter the reasoning.
 
 Run `scripts/compile.py SOURCE OUTPUT --root WORKSPACE`, using absolute paths
 or running from the intended project root. It uses the bundled font without
-installing it globally. Typst 0.15.1 was used for the included validation;
+installing it globally. Default export is image-only at 300 DPI, with no
+selectable/hidden text layer. `--no-selectable` explicitly chooses that mode;
+`--selectable` retains vector text for copy/paste, searching and accessibility.
+`--dpi 400` optionally adjusts raster resolution. URI links remain clickable.
+Explain that external OCR may recognize even image-only pages; do not promise
+to block OCR. Preserve editable Typst source, and honor the user's mode choice.
+PyMuPDF is required for image-only export. Typst 0.15.1 was used for validation;
 recheck custom variable-axis support on other versions.
 
 Render every PDF page and inspect at readable scale. Check letterform variety,
@@ -93,9 +103,25 @@ small specimen; compare `hw` variation on/off and `rlig` on/off. Use PDF vector
 glyph geometry or font shaping to check that alternates actually render,
 rather than inferring success from a font name or a valid compile.
 
+Keep all visible Typst content consistent: titles, headings, tables, captions,
+page numbers, code snippets, superscripts and equations must look handwritten.
+Use `hw` where variation is needed and handwritten notation helpers for math.
+The template also sets raw/code text to the handwriting font. Review any
+fallback glyphs or math fonts before flattening: image export does not change
+their appearance. Keep mathematical meaning unambiguous.
+
+For default output, verify every page has no extracted text, no text fonts,
+and at least one page image. Review pixels as well as PDF structure. Perform
+content/glyph checks on the selectable intermediate before image-only export.
+`scripts/verify_export.py OUTPUT.pdf` checks this structure; add `--selectable`
+to verify an intentionally selectable export instead.
+
 `assets/specimen.typ` is the reusable visual test. Compile it, then run
 `scripts/verify_variation.py SPECIMEN.pdf` (requires PyMuPDF) to compare the
 actual glyph IDs for repeated a, C, and 1 with cycling disabled/enabled.
+Compile glyph and geometry fixtures with `--selectable`; their tests require
+text objects. The public demo and ordinary deliverables use the image-only
+default unless the user explicitly asks for selectable text.
 For engine/control changes, compile `scripts/fixtures/controls.typ` and pass
 its PDF to `scripts/verify_controls.py`. It checks master settings, inherited
 and explicit values, individual overrides, and actual scale/baseline geometry.

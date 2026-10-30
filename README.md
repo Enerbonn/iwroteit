@@ -2,7 +2,8 @@
 
 A Codex skill for making digital handwritten-style PDFs with Typst. It combines
 actual alternate glyphs with variable letter shapes, baseline bounce, spacing,
-and slope. The result stays editable, vector-based, and searchable.
+and slope. Keep editable Typst source; export image-only PDFs by default, or
+choose selectable text explicitly.
 
 ![I wrote this ;> - an extremely honest handwriting demo](assets/demo.png)
 
@@ -34,13 +35,13 @@ The display name is **Iwroteit:P**; the technical skill name is `iwroteit`.
 ## Run directly
 
 Requirements: Typst CLI with custom variable-font axis support (tested with
-0.15.1), Python 3, and PyMuPDF for the optional PDF verification script.
+0.15.1), Python 3, and PyMuPDF for image-only export and PDF verification.
 The font is bundled and requires no system font installation.
 
 From the repository root:
 
 ```sh
-python scripts/compile.py assets/specimen.typ specimen.pdf --root .
+python scripts/compile.py assets/specimen.typ specimen.pdf --root . --selectable
 python scripts/verify_variation.py specimen.pdf
 ```
 
@@ -124,19 +125,60 @@ superscripts without a printed math-font fallback. Complex mathematical
 notation requires additional layout and glyph review; this is not a complete
 OpenType math font.
 
+For black ink and brush-style answer highlights:
+
+```typst
+#show: handwritten.with(ink: black, intensity: 90%)
+#brush-answer("P(A) = 1/2 = 50%", seed: 7)
+```
+
+`brush-highlight` also wraps short custom content. Its vector swipes have
+uneven edges, slanted ends and overlapping translucent layers. Keep each swipe
+within one line; split longer answers into separate highlighted lines.
+
 [Technical glyph-cycling specimen](assets/specimen.pdf) remains separate from
 the humorous public demo. Run its verification with the commands above.
 
 For master-control regression checks:
 
 ```sh
-python scripts/compile.py scripts/fixtures/controls.typ test-output/controls.pdf --root .
+python scripts/compile.py scripts/fixtures/controls.typ test-output/controls.pdf --root . --selectable
 python scripts/verify_controls.py test-output/controls.pdf
 ```
 
 This checks actual exported scale/baseline geometry, document inheritance,
 passage overrides, and individual-property precedence. The demo and technical
 specimen were also rendered and visually reviewed.
+
+## Selection and copy/paste: off by default
+
+```sh
+# Default: 300-DPI page images, no embedded selectable text
+python scripts/compile.py assets/demo.typ demo.pdf --root .
+# Explicit off (same as the default)
+python scripts/compile.py assets/demo.typ demo.pdf --root . --no-selectable
+# On: retain Typst's vector text for selection, searching and copying
+python scripts/compile.py assets/demo.typ demo.pdf --root . --selectable
+```
+
+Image-only export contains no hidden text layer and preserves clickable URI
+credits. `--dpi 400` changes raster resolution. Separate OCR software may still
+recognize the images: this switch controls the PDF's own text layer, not whether
+another program is allowed to perform OCR. Image-only output also loses text
+search and text-based accessibility. Keep the `.typ` source for editing.
+Use `--selectable` for glyph/geometry tests, which need actual text objects.
+
+Verify the exported mode with `python scripts/verify_export.py demo.pdf`, or
+append `--selectable` when checking an intentionally selectable document.
+
+## Consistent handwriting throughout
+
+Apply the same handwritten treatment to titles, section labels, tables,
+captions, page numbers, inline code, superscripts, and equations. The template
+uses the handwriting font for raw/code elements too. Use `hw` for controlled
+variation in visible text, `hfrac`/`hpower` for simple notation, and brush swipes
+for hand-marked highlights. Check for printed-font fallbacks before flattening;
+rasterization alone cannot make a printed equation look handwritten.
 
 ## Licenses and sources
 

@@ -26,6 +26,7 @@
     variations: ("INFM": 65, "BNCE": 14, "SPAC": 0, "ital": 0.12),
     hyphenate: false, lang: "en")
   set par(justify: false, leading: 0.65em, spacing: 0.7em)
+  show raw: set text(font: "Shantell Sans")
   handwriting-settings.update(intensity)
   body
 }
@@ -115,6 +116,37 @@
   #box(fill: rgb("#fff0a6"), inset: (x: 6pt, y: 3pt), radius: 2pt)[
     #hw(s, seed: seed)
   ]
+]
+
+// A layered vector highlighter swipe with seeded uneven edges and chisel ends.
+// Measure an unbroken answer first; for long text, highlight each line separately.
+#let brush-highlight(body, seed: 1) = context {
+  let dimensions = measure(body)
+  let w = dimensions.width / 1pt + 12
+  let h = dimensions.height / 1pt + 6
+  let upper = range(9).map(i => str(3 + (w - 7) * i / 8) + "," +
+    str(1.2 + random-unit(seed * 41 + i * 13) * 2.1)).join(" ")
+  let lower = range(9).rev().map(i => str(2 + (w - 7) * i / 8) + "," +
+    str(h - 1.1 - random-unit(seed * 73 + i * 19) * 2.1)).join(" ")
+  let svg = ("<svg xmlns='http://www.w3.org/2000/svg' width='" + str(w) +
+    "' height='" + str(h) + "' viewBox='0 0 " + str(w) + " " + str(h) + "'>" +
+    "<polygon points='" + upper + " " + lower + "' fill='#ffe565' opacity='.64'/>" +
+    "<path d='M 1 " + str(h * 0.54) + " Q " + str(w * 0.46) + " " +
+    str(h * 0.37) + " " + str(w - 1) + " " + str(h * 0.55) +
+    "' fill='none' stroke='#ffe565' stroke-width='" + str(h * 0.60) +
+    "' opacity='.22'/>" +
+    "<path d='M 4 " + str(h * 0.17) + " Q " + str(w * 0.6) + " " +
+    str(h * 0.09) + " " + str(w - 5) + " " + str(h * 0.19) +
+    "' fill='none' stroke='#eecb40' stroke-width='.6' opacity='.16'/></svg>")
+  box(inset: (x: 6pt, y: 3pt))[
+    #place(top + left, dx: -6pt, dy: -3pt)[
+      #image(bytes(svg), width: w * 1pt, height: h * 1pt)
+    ]
+    #body
+  ]
+}
+#let brush-answer(s, seed: 1) = block(above: 7pt, below: 8pt)[
+  #brush-highlight(hw(s, seed: seed), seed: seed)
 ]
 
 // Handwriting fractions without silently falling back to a printed math font.
