@@ -1,0 +1,4 @@
+interface:
+  display_name: "Iwroteit:P"
+  short_description: "Digital handwriting with real letterform variation"
+  default_prompt: "Use $iwroteit to make a digital handwritten-style PDF with Typst and naturally varied letterforms."
