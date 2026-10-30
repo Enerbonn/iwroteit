@@ -165,4 +165,4 @@ For preview PNGs, use `scripts/render_preview.py INPUT.pdf OUTPUT.png`.
 It crops white margins with a small padding by default; keep the full PDF page
 size unless the user asks to change it. `--no-crop` keeps a page-sized image.
 The English public demo shows standard (50/50/50), careful, lazy and playful
-wobbly presets. Joke percentages are visual labels, not measures of a person.
+wobbly presets. Keep the demo's humor without adding explanations of its jokes.

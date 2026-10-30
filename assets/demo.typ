@@ -39,7 +39,7 @@
 #handline("This is me writing with 50% laziness.", seed: 57,
   fatigue: 0.5, angle: -0.25deg, gap: 11pt)
 
-#label("\"30% DRUNK\" / standard + extra wobble (a visual joke)")
+#label("\"30% DRUNK\" / standard + extra wobble")
 #handline("This is me writing when I'm \"30% drunk\".", seed: 61,
   baseline-wave: 2pt, baseline-drift: -1pt, slant-jitter: 0.4,
   space-jitter: 35%, angle: -0.6deg, gap: 11pt)
@@ -50,6 +50,5 @@
   #hw("Actual credits:", seed: 81)
   #link("https://github.com/arrowtype/shantell-sans")[Shantell Sans] +
   #link("https://typst.app/")[Typst] +
-  #link("https://github.com/Enerbonn/iwroteit")[Iwroteit:P]. \
-  #hw("Generated handwriting. The promises and preset names are jokes.", seed: 83)
+  #link("https://github.com/Enerbonn/iwroteit")[Iwroteit:P].
 ]

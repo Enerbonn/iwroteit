@@ -203,8 +203,7 @@ The preview shows a few settings you can start from:
 | 50% lazy | 50 / 50 / 50 | `fatigue: 0.5` |
 | "30% drunk" | 50 / 50 / 50 | More baseline wander, spacing and slope |
 
-The last name is a joke about the visual style. It doesn't represent actual
-intoxication. Each preset is a reproducible set of rendering options.
+Each preset is a reproducible set of rendering options.
 The exact settings used in the preview are in [demo.typ](assets/demo.typ).
 
 Use `fatigue` when you want the later writing to look less careful. Set it
