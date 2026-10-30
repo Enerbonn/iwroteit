@@ -22,3 +22,11 @@ Handwritten mathematical structures:
 #work([P(A) = #hfrac("13", "52") = #hfrac("1", "4") = 25%])
 #work([P(all odd) = #hpower([(1/2)], [6]) = 1/64])
 #answer("Final answers remain legible and highlighted.", seed: 19)
+#v(10pt)
+One setting, same text and seed:
+#note("0%:", seed: 1)
+#block[#hw("Handwriting can be neat, relaxed, or wonderfully imperfect.", intensity: 0%, seed: 56)]
+#note("50%:", seed: 1)
+#block[#hw("Handwriting can be neat, relaxed, or wonderfully imperfect.", intensity: 50%, seed: 56)]
+#note("100%:", seed: 1)
+#block[#hw("Handwriting can be neat, relaxed, or wonderfully imperfect.", intensity: 100%, seed: 56)]

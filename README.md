@@ -4,9 +4,9 @@ A Codex skill for making digital handwritten-style PDFs with Typst. It combines
 actual alternate glyphs with variable letter shapes, baseline bounce, spacing,
 and slope. The result stays editable, vector-based, and searchable.
 
-![Handwriting and variation specimen](assets/specimen.png)
+![I wrote this ;> - an extremely honest handwriting demo](assets/demo.png)
 
-[Open the sample PDF](assets/specimen.pdf)
+[Open the demo PDF with clickable credits](assets/demo.pdf)
 
 ## How the variation works
 
@@ -50,18 +50,93 @@ that document. The Typst project root must contain the imported template.
 ```typst
 #import "assets/handwriting.typ": *
 #show: handwritten.with(size: 12pt, paper: "plain")
-#hw("Notes written digitally", seed: 11)
+#hw("Notes written digitally", intensity: 65%, seed: 11)
 #topic(1, "Probability")
 #note("Three favorable outcomes out of six.", seed: 21)
 #work("P(A) = 3/6 = 1/2", seed: 31)
 #answer("Answer: 1/2 = 50%", seed: 41)
 ```
 
-Customize ink, font size, plain/ruled paper, seeds, irregularity, bounce, and
-variation strength. `hfrac` and `hpower` provide handwritten fractions and
+## One main naturalness setting
+
+Set **`intensity: 0%` to `100%`**. The default is `60%`. This is a Typst
+parameter, not a graphical slider. It coordinates letter-shape irregularity,
+baseline bounce/wander, word spacing, letter scale, slant, and stroke-weight
+variation. `0%` removes the helper's added irregularity; the font's real
+alternate-glyph cycling remains on.
+
+Set it **once for the whole document**, then override individual passages only
+if needed:
+
+```typst
+#show: handwritten.with(intensity: 75%)
+#hw("This inherits the document's 75% intensity.")
+#hw("This passage is deliberately neater.", intensity: 10%)
+```
+
+```typst
+#hw("Neat and consistent.", intensity: 15%)
+#hw("Normal tablet notes.", intensity: 60%)
+#hw("Looser, less perfect writing.", intensity: 95%)
+```
+
+Optional overrides take precedence over the corresponding master defaults:
+
+```typst
+#hw("Loose writing with steady size and heavy ink.",
+  intensity: 85%, scale-jitter: 0%, stroke-weight: 460, pressure: 0)
+```
+
+## Make later writing progressively looser
+
+`fatigue` is a visual preset, not a claim about the writer's physical state.
+Set it per paragraph, or use `fatigue-to` to ramp across a text run. It adds
+irregularity, a little size reduction, more baseline movement, and variable
+stroke weight. The effect is opt-in and combines with the master setting.
+
+```typst
+#hw("Start neat and gradually lose patience with this sentence.",
+  intensity: 70%, fatigue: 0, fatigue-to: 0.9)
+#handline("This line has stopped respecting the ruler.",
+  intensity: 90%, fatigue: 0.8, angle: -0.6deg,
+  baseline-drift: -2pt, baseline-wave: 1pt, gap: 12pt)
+```
+
+| Override | What it changes |
+|---|---|
+| `word-space`, `space-jitter` | Average gap and gap variation; e.g. `110%`, `30%` |
+| `scale`, `scale-jitter` | Letter size and size variation; e.g. `98%`, `8%` |
+| `tracking` | Extra letter spacing, e.g. `0.1pt` |
+| `irregularity`, `bounce`, `variation` | Shape axis, glyph bounce, added variation strength |
+| `slant`, `slant-jitter` | Font italic axis and its variation, in 0-1 units |
+| `baseline-drift`, `baseline-wave` | End-to-end drift and smooth baseline wave |
+| `stroke-weight`, `pressure` | Font weight 300-800 and per-word weight variation |
+| `fatigue`, `fatigue-to` | Fixed or progressive looseness, from 0 to 1 |
+| `handline`: `angle`, `inset`, `gap` | Whole-line slope, left indent, and line spacing |
+
+Stroke controls interpolate font-outline weight. They do not reconstruct
+individual pen trajectories or pressure changes inside a single stroke. Long
+auto-wrapped paragraphs keep their word progression across wraps; use explicit
+`handline` calls when each physical line needs its own slope or baseline reset.
+
+Customize ink and plain/ruled paper with `handwritten`. `hfrac` and `hpower` provide handwritten fractions and
 superscripts without a printed math-font fallback. Complex mathematical
 notation requires additional layout and glyph review; this is not a complete
 OpenType math font.
+
+[Technical glyph-cycling specimen](assets/specimen.pdf) remains separate from
+the humorous public demo. Run its verification with the commands above.
+
+For master-control regression checks:
+
+```sh
+python scripts/compile.py scripts/fixtures/controls.typ test-output/controls.pdf --root .
+python scripts/verify_controls.py test-output/controls.pdf
+```
+
+This checks actual exported scale/baseline geometry, document inheritance,
+passage overrides, and individual-property precedence. The demo and technical
+specimen were also rendered and visually reviewed.
 
 ## Licenses and sources
 
