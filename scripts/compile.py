@@ -21,7 +21,12 @@ def image_only_pdf(data, dpi=300):
                     if link.get("kind") == pymupdf.LINK_URI:
                         page.insert_link({"kind": pymupdf.LINK_URI,
                                           "from": link["from"], "uri": link["uri"]})
-            return result.tobytes(garbage=4, deflate=True)
+            data = result.tobytes(garbage=4, deflate=True)
+    # Reopen the serialized bytes: verify the actual export before writing it.
+    from verify_export import check_image_only
+    with pymupdf.open(stream=data, filetype="pdf") as exported:
+        check_image_only(exported)
+    return data
 
 
 def main():

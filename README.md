@@ -8,6 +8,10 @@ baseline so repeated words don't all look the same.
 Use it as a skill, or edit the file and run it yourself. The default PDF has no
 selectable text layer. You can turn selection on when you want it.
 
+The exporter automatically checks the finished image-only PDF before saving
+it. Selectable text requires the explicit `--selectable` flag. A PDF viewer may
+still recognize the page image with its own OCR.
+
 ![I wrote this ;> - an extremely honest handwriting demo](assets/demo.png)
 
 [Open the demo PDF with clickable credits](assets/demo.pdf)

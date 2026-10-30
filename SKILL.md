@@ -5,6 +5,19 @@ description: Create digital handwritten-style documents and PDFs with Typst, usi
 
 # Iwroteit:P
 
+## Default delivery: no selectable text
+
+Deliver an image-only PDF unless the user explicitly asks for copy/paste or
+selectable/searchable text. This applies to this local skill and all ordinary
+deliverables. Always use `scripts/compile.py`; a direct `typst compile` export
+retains text and is only an intermediate. Never deliver that intermediate by
+mistake. The exporter checks the serialized PDF and fails if an image-only
+export contains text fonts/text extraction or lacks page images.
+
+Keep `--selectable` as an explicit opt-in. It is not the default. Image-based
+pages cannot prevent a PDF viewer from applying its own OCR; describe the
+guarantee as "no embedded selectable text layer", not "OCR-proof".
+
 Use Typst as the layout engine and the bundled OFL-licensed Shantell Sans
 variable font as the handwriting engine. Apply the PDF skill when exporting
 and verifying a PDF. Preserve the requested content, identity, and filename.
