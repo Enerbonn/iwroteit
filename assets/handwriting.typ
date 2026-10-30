@@ -1,6 +1,6 @@
 // Digital handwriting: actual OpenType alternates plus reproducible variation.
 #let pen = rgb("#193d76")
-#let handwriting-settings = state("iwroteit-intensity", 60%)
+#let handwriting-settings = state("iwroteit-intensity", 50%)
 #let letter-settings = state("iwroteit-letter-variance", none)
 #let stroke-settings = state("iwroteit-stroke-variance", none)
 #let random-unit(n) = {
@@ -9,7 +9,7 @@
   calc.rem(a * 48271, 2147483647) / 2147483647
 }
 
-#let handwritten(body, size: 12pt, ink: pen, paper: "plain", intensity: 60%,
+#let handwritten(body, size: 12pt, ink: pen, paper: "plain", intensity: 50%,
   letter-variance: none, stroke-variance: none) = {
   assert(type(intensity) == ratio and intensity >= 0% and intensity <= 100%,
     message: "intensity must be a percentage from 0% to 100%")

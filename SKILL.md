@@ -68,11 +68,11 @@ a project root that contains both document and skill. Start with:
 Choose plain white paper and dark blue pen for clean tablet notes. `paper:
 "ruled"` adds a light notebook background, but the ruling is decorative and
 does not automatically align every text baseline. Start with the main
-`handwritten.with(intensity: 60%)` document setting: range 0%-100%, default 60%.
+`handwritten.with(intensity: 50%)` document setting: range 0%-100%, default 50%.
 Each `hw` run inherits it; `hw(..., intensity: 85%)` overrides a passage. It coordinates
 letter-shape irregularity, bounce, word gaps, scale jitter, slant, smooth
 baseline movement, and stroke-weight variation. Use around 15% for neat notes,
-60% for ordinary tablet writing, and 90% for loose writing. At 0%, added
+50% for ordinary tablet writing, and 90% for loose writing. At 0%, added
 irregularity is removed while font-internal alternate cycling stays enabled.
 
 Individual properties override the defaults chosen by intensity. See the
@@ -160,3 +160,9 @@ stroke strengths and exact variant choices. Inspect it visually; distinct
 glyph IDs alone do not prove visibly different contours. Font build/outline
 validation uses fonttools only for development; ordinary use needs no new
 dependency because both fonts are bundled. See assets/fonts/DERIVATION.md.
+
+For preview PNGs, use `scripts/render_preview.py INPUT.pdf OUTPUT.png`.
+It crops white margins with a small padding by default; keep the full PDF page
+size unless the user asks to change it. `--no-crop` keeps a page-sized image.
+The English public demo shows standard (50/50/50), careful, lazy and playful
+wobbly presets. Joke percentages are visual labels, not measures of a person.

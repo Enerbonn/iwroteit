@@ -16,13 +16,14 @@ def main():
     parser.add_argument("pdf", type=Path)
     args = parser.parse_args()
     with pymupdf.open(args.pdf) as document:
-        if len(document) != 5:
-            raise ValueError("Expected the five-page controls fixture")
-        zero, full, passage_full, passage_zero, manual = map(metrics, document)
+        if len(document) != 7:
+            raise ValueError("Expected the seven-page controls fixture")
+        zero, full, passage_full, passage_zero, manual, default, explicit = map(metrics, document)
     checks = {
         "passage 0% overrides global 100%": zero == passage_zero,
         "passage 100% overrides global 0%": full == passage_full,
         "individual settings override master defaults": zero == manual,
+        "defaults equal explicit 50/50/50": default == explicit,
         "0% has steady scale and baseline": bool(zero)
         and len({v[1] for v in zero}) == 1 and len({v[3] for v in zero}) == 1,
         "100% varies scale and baseline": len({v[1] for v in full}) > 1

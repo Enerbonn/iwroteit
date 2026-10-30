@@ -131,7 +131,7 @@ subfolder, adjust its import path accordingly.
 
 ## One main naturalness setting
 
-Set **`intensity: 0%` to `100%`**. The default is `60%`.
+Set **`intensity: 0%` to `100%`**. The default is `50%`.
 You change it in the Typst file; there isn't a slider interface. It adjusts letter-shape irregularity,
 baseline bounce/wander, word spacing, letter scale, slant, and stroke-weight
 variation. `0%` removes the helper's added irregularity; the font's real
@@ -148,7 +148,7 @@ setting, change that passage:
 
 ```typst
 #hw("Neat and consistent.", intensity: 15%)
-#hw("Normal tablet notes.", intensity: 60%)
+#hw("Normal tablet notes.", intensity: 50%)
 #hw("Looser, less perfect writing.", intensity: 95%)
 ```
 
@@ -163,6 +163,9 @@ the defaults chosen by intensity:
 ## Control individual letters and their curves
 
 Both controls follow `intensity` unless you set them yourself:
+
+With no overrides, the standard is **50% intensity, 50% letter variance and
+50% stroke variance**.
 
 ```typst
 #show: handwritten.with(intensity: 75%,
@@ -190,6 +193,19 @@ letters, not connected cursive or complex-script shaping. It doesn't generate
 pen trajectories or independently redraw a letter from a handwriting sample.
 
 ## Make later writing progressively looser
+
+The preview shows a few settings you can start from:
+
+| Preview preset | Intensity / letters / strokes | Other settings |
+|---|---|---|
+| My standard | 50 / 50 / 50 | No fatigue |
+| Trying to be perfect | 10 / 10 / 10 | No fatigue |
+| 50% lazy | 50 / 50 / 50 | `fatigue: 0.5` |
+| "30% drunk" | 50 / 50 / 50 | More baseline wander, spacing and slope |
+
+The last name is a joke about the visual style. It doesn't represent actual
+intoxication. Each preset is a reproducible set of rendering options.
+The exact settings used in the preview are in [demo.typ](assets/demo.typ).
 
 Use `fatigue` when you want the later writing to look less careful. Set it
 per paragraph, or use `fatigue-to` to change it gradually across a text run. It adds
@@ -252,6 +268,17 @@ python scripts/verify_controls.py test-output/controls.pdf
 This checks actual exported scale/baseline geometry, document inheritance,
 passage overrides, and individual-property precedence. The demo and technical
 specimen were also rendered and visually reviewed.
+
+## Make a preview image
+
+```sh
+python scripts/render_preview.py assets/demo.pdf assets/demo.png
+```
+
+White margins are cropped by default, with a small border around the content.
+This keeps short notes from leaving most of the preview empty. It changes the
+PNG only; the PDF keeps its page size. Add `--no-crop` for a full-page image,
+or adjust `--padding 32`, `--dpi 180`, or `--page 2`.
 
 ## Selection and copy/paste: off by default
 
